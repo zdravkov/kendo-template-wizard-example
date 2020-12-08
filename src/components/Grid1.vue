@@ -43,18 +43,20 @@
         </div>
 </template>
 <script>
-import Vue from 'vue';
 import { Grid, GridToolbar, GridNoRecords } from '@progress/kendo-vue-grid';
 import { process } from '@progress/kendo-data-query';
 import myCommandCell from './myCommandCell';
 import { sampleProducts } from '../common/sample-products';
 
 
-Vue.component('Grid', Grid);
-Vue.component('grid-toolbar', GridToolbar);
-Vue.component('grid-norecords', GridNoRecords);
+
 
 export default {
+    components: {
+        'Grid': Grid,
+        'grid-toolbar': GridToolbar,
+        'grid-norecords': GridNoRecords
+    },
      data: function () {
         return {
             gridData: [],
@@ -89,7 +91,7 @@ export default {
               let updated = Object.assign({},this.gridData[index], {[e.field]:e.value});
               this.gridData.splice(index, 1, updated);
             } else {
-              Vue.set(e.dataItem, e.field, e.value);
+              e.dataItem[e.field] = e.value;
             }
         },
         insert() {
@@ -151,7 +153,7 @@ export default {
              if(editedItems.length){
                 editedItems.forEach(
                     item => {
-                       Vue.set(item, 'inEdit', undefined);
+                       item['inEdit'] = undefined;
                      });
              }
             this.getData();
