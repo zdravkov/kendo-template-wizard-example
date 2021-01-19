@@ -11,7 +11,7 @@ const useInlineEditGrid = function(sampleProducts) {
         updatedData: sampleProducts,
         editID: null,
         columns: [
-            { field: 'ProductID', editable: false, title: 'ID', width: '50px' },
+            { field: 'ProductID', editable: false, title: 'ID', width: '75px' },
             { field: 'ProductName', title: 'Name' },
             { field: 'FirstOrderedOn', editor: 'date', title: 'First Ordered', format: '{0:d}' },
             { field: 'UnitPrice', filter: 'numeric', title: 'Unit Price' },
@@ -36,17 +36,20 @@ const useInlineEditGrid = function(sampleProducts) {
         initData.gridData.splice(0, 0, dataItem)
     };
     const edit = (e) => {
-        let index = initData.gridData.findIndex(p => p.ProductID === e.dataItem.ProductID);
-        let updated = Object.assign({},initData.gridData[index], {inEdit:true});
-        initData.gridData.splice(index, 1, updated);
+        if(e.dataItem.ProductID){
+            let index = initData.gridData.findIndex(p => p.ProductID === e.dataItem.ProductID);
+
+            initData.gridData[index].inEdit = true;
+        }
     };
     const save = (e) => {
         let index = initData.gridData.findIndex(p => p.ProductID === e.dataItem.ProductID);
         let item = initData.gridData[index];
-        let updated = Object.assign(update(initData.gridData.slice(), item), {inEdit:undefined});
-        initData.gridData.splice(index, 1, updated);
+        let updated = update(initData.gridData.slice(), item);
+        initData.gridData[index] = updated;
+        initData.gridData[index].inEdit = undefined;
         let updateDataIndex = initData.updatedData.findIndex(p => p.ProductID === e.dataItem.ProductID);
-        initData.updatedData.splice(updateDataIndex, 1, updated);
+        initData.updatedData[updateDataIndex] = updated;
     };
     const update = (data, item, remove) => {
         let updated;
@@ -71,7 +74,8 @@ const useInlineEditGrid = function(sampleProducts) {
         if (e.dataItem.ProductID) {
             let index = initData.gridData.findIndex(p => p.ProductID === e.dataItem.ProductID);
             let updateDataIndex = initData.updatedData.findIndex(p => p.ProductID === e.dataItem.ProductID);
-            let updated = Object.assign(initData.updatedData[updateDataIndex], {'inEdit': undefined});
+            let updated = initData.updatedData[updateDataIndex];
+            updated.inEdit = undefined;
             initData.gridData.splice(index, 1, updated);
         } else {
           let index = initData.gridData.findIndex(p => JSON.stringify(e.dataItem) === JSON.stringify(p));
@@ -80,10 +84,12 @@ const useInlineEditGrid = function(sampleProducts) {
         }
     };
     const remove = (e) => {
-        e.dataItem.inEdit = undefined;
-        update(initData.gridData, e.dataItem, true);
-        update(initData.updatedData, e.dataItem, true);
-        initData.gridData = initData.gridData.slice();
+        if (e.dataItem.ProductID) {
+            e.dataItem.inEdit = undefined;
+            update(initData.gridData, e.dataItem, true);
+            update(initData.updatedData, e.dataItem, true);
+        }
+     
     };
     const cancelChanges = () => {
          let editedItems = initData.updatedData.filter(p => p.inEdit === true);
