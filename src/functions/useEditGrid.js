@@ -81,8 +81,8 @@ const useInlineEditGrid = function(sampleProducts) {
     };
     const remove = (e) => {
         e.dataItem.inEdit = undefined;
-        update(this.gridData, e.dataItem, true);
-        update(this.updatedData, e.dataItem, true);
+        update(initData.gridData, e.dataItem, true);
+        update(initData.updatedData, e.dataItem, true);
         initData.gridData = initData.gridData.slice();
     };
     const cancelChanges = () => {
