@@ -23,6 +23,12 @@
                                     <Input :name="'lastName'" v-model="lastName"  :placeholder="'Your Last Email'"  />
                                  </label>
                             </div>
+                            <div>
+                                 <label class="k-form-field">
+                                    <span>Last name</span>
+                                    <datepicker :name="'dateOfBirth'" v-model="dateOfBirth" :placeholder="'Date of Birth'"  />
+                                 </label>
+                            </div>
                             <div class="k-form-field">
                                 <span>Gender</span>
                                     <input type="radio" name="gender" id="female" class="k-radio">
@@ -85,7 +91,9 @@
         </div>
 </template>
 <script>
+import { computed, ref } from 'vue';
 import { Input } from '@progress/kendo-vue-inputs';
+import { DatePicker } from '@progress/kendo-vue-dateinputs';
 import { Dialog, DialogActionsBar } from '@progress/kendo-vue-dialogs';
 import FormContainer from './FormContainer';
 
@@ -94,47 +102,62 @@ export default {
         Input,
         Dialog,
         DialogActionsBar,
-        FormContainer
+        FormContainer,
+        datepicker: DatePicker
      },
-     computed: {
-        validationMessage: function(){
-            return (this.emailRegex.test(this.email) ? "" : "Please enter a valid email.");
-        }
-     },
-     data: function() {
-        return {
-            firstName: '',
-            lastName: '',
-            email: '',
-            company: '',
-            userName: '',
-            password: '',
-            twoFactor: true,
-            showDialog: false,
-            emailRegex: new RegExp(/\S+@\S+\.\S+/),
-            allowSubmit:false            
+    setup () {
+       const firstName= ref('');
+       const lastName= ref('');
+       const email= ref('');
+       const dateOfBirth= ref(new Date());
+       const company= ref('');
+       const userName= ref('');
+       const password= ref('');
+       const twoFactor= ref(true);
+       const showDialog= ref(false)
+       const emailRegex= ref(new RegExp(/\S+@\S+\.\S+/))
+       const allowSubmit= ref(false);   
+
+        const validationMessage = computed(() => emailRegex.value.test(email) ? "" : "Please enter a valid email.");
+
+        const onFormReset = () => {
+            firstName.value = '';
+            lastName.value = '';
+            email.value = '';
+            company.value = '';
+            userName.value = '';
+            password.value = '';
         };
-     },
-     methods: {
-         onFormReset(){
-            this.firstName = '';
-            this.lastName = '';
-            this.email = '';
-            this.company = '';
-            this.userName = '';
-            this.password = '';
-         },
-        toggleDialog() {
-            this.showDialog = !this.showDialog;
-        },
-        handleSubmit() {
-            this.showDialog = !this.showDialog;
-        },
-        onSubmit(){
+        const toggleDialog = () => {
+            showDialog.value = !showDialog.value;
+        };
+        const handleSubmit = () => {
+            showDialog.value = !showDialog.value;
+        };
+        const onSubmit = () => {
             event.preventDefault();
-            this.showDialog = true;
-            setTimeout(() => { this.showDialog = false; }, 3000);
-        }
-     }
+            showDialog.value = true;
+            setTimeout(() => { showDialog.value = false; }, 3000);
+        };
+
+        return {
+           firstName,
+           lastName,
+           email,
+           dateOfBirth,
+           company,
+           userName,
+           password,
+           twoFactor,
+           showDialog,
+           emailRegex,
+           allowSubmit,
+           validationMessage,
+           onFormReset,
+           toggleDialog,
+           handleSubmit,
+           onSubmit
+        };
+    }
 }
 </script>
